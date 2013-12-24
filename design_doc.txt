@@ -1,0 +1,459 @@
+Bennett Lee
+
+Design Document
+
+Purpose/Overview/Instructions
+------------------------------
+The program I designed is essentially a game that utilizes the QT Framework to create a GUI-Based video game. 
+
+The objective of the game is for the player to touch the intel item or shoot an enemies while avoid being hit by enemies and obstacles. When the player touches enemies or obstacles the player health will be lower. When player touches an life item, he health bar will be higher. Every time the player touches the intel or shoots an enemy, he will get ten points added to his total score. For every 50 points scored, the player advances to the next level. There is a total of three levels. The objective is to get as much points as possible.
+
+Instructions on main menu
+------------------------------
+IMPORTANT NOTE: IMAGE_PATH is the directory where all the sprites and background images are retrieved from. It is set in the “Object.h”. For some reason, I cannot set the image directory to the directory of the actual folder where the project is, so I created an image directory one level outside of the project directory.
+
+Navigate with mouse or up 'w' key for up and 's' key for down
+Select with mouse click or 'enter' key
+
+
+Instructions on game
+------------------------------
+'w' 			- move up
+'d' 			- move right
+'s' 			- move down
+'a' 			- move left
+'Space' 		- Shoot
+Right or left arrow key - switch weapon
+'h' 			- hide (prevents play from being damaged)
+'q' 			- quit (back to main menu) 
+'p' 			- pause
+
+Level 1
+-------
+The enemy in this level is soldier. The obstacles are bombs and missiles.
+
+Level 2
+-------
+The enemy in this level is scorpion. The obstacles are cactuses and missiles (tracks where you are and shoots at you).
+
+Level 3
+-------
+The enemy in this level is assassin (follows you). The obstacles are rocks and ice spikes (tracks where you are and shoots at you).
+
+
+Classes
+------------------------------
+
+The following are the Classes used in this program: Mainboard, MainMenu, MainMenuItem, Instruction, Gameboard, Menu, Object, Projectile, Bullet, Rocket, Player, Monster, Soldier, Scorpion, Assassin, Missile, TMissile, IceSpike, Life, Cactus, Bomb, Rock, Intel, Snowball, Node, and LinkedList. 
+
+The Mainboard represents the entire window that holds the main menu, instruction, and gameboard. The main menu class is display when user first launches the application and displays the option to start the game, see the instruction, or quit. The Instruction class provides two pages of information about the video game.  The Gameboard class is the backbone of the game. The menu represents the stats, key, and command instructions of that will be displayed next to the gameboard. 
+
+The Object class is an abstract base class on which every object in the game (moving or non-moving) is derived from. The Projectile class represents anything that the player shoots (bullets, rockets, etc.). The bullet class represents the bullet shot by the player with a pistol or machine gun. The Rocket class represents the rocket shot by the player with a rocket launcher. The Player class represents the individual player in the game. The Monster class represents all monster objects in the game. The soldier represents the soldier enemy and is a sub-class of monster. The Scorpion class represents the enemy in level 2 and is a sub-class of Monster. The Assassin represents the enemy in level 3 and is a sub-class of monster. The Missile class represents all the missile objects in the game. The TMissile class represents the tracking missile in the game. The Life class represents life items in the game. The Cactus class is an obstacle and represents all cactus objects in the game.  The Bomb class is an obstacle and represents all bomb objects in the game. The Rock class is an obstacle and represents all rock objects in the game. The Intel class represnts all intel objects in the game. The Snowball represents all snowball objects in the game and will appear in level 3. The Node and LinkedList class are used to store a list objects. 
+
+------Mainboard-------
+The Mainboard class have the following member data: mainmenu, instruction, gameboard, menu, and currentdisplay.
+
+Below are the functions and their description in the Mainboard class:
+
+// Constructor
+MainBoard(QWidget *parent = 0);
+// Shows the appropriate display
+void displayMainMenu();
+void displayInstruction();
+void displayGameBoard();
+void keyPressEvent(QKeyEvent *event);
+
+------MainMenu-------
+The MainMenu class have the following member data: itemList.
+
+Below are the functions and their description in the MainMenu class:
+
+// Constructor
+MainMenu(QWidget *parent = 0);
+// Updates the selected index of the list
+void updateList(int index);
+private:
+// Creates a list of menu items
+void createMenuItems();
+// Updates the new selected item
+// Peforms the appropriate function when item is pressed
+void itemPressed(ITEM_TYPE type);
+// Removes the list of menu items
+void removeList();
+void keyPressEvent(QKeyEvent *event);
+void mouseMoveEvent(QMouseEvent *event);
+void mouseReleaseEvent(QMouseEvent *event);
+void paintEvent(QPaintEvent *event);
+
+------MainMenuItem-------
+The MainMenuItem class have the following member data: pos, image, rect, selected, and type.
+
+Below are the functions and their description in the MainMenuItem class:
+
+// Constructor
+MainMenuItem(QWidget *parent = 0, ITEM_TYPE type = START);
+// Creates path for image;
+QString createPath();
+// Getters
+QImage* getImage();
+QRect getRect();
+ITEM_TYPE getType();
+bool getSelected();
+// Setter
+void setSelected(bool selected);
+// Destructor
+~MainMenuItem();
+
+------Instructor-------
+The Instructor class have the following member data: pagenum, next, and finish.
+
+Below are the functions and their description in the Instructor class:
+
+// Changes the page number
+void changePage();
+public:
+// Constructor
+Instruction(QWidget *parent = 0);
+void paintEvent(QPaintEvent *event);
+void keyPressEvent(QKeyEvent *event);
+void mouseMoveEvent(QMouseEvent *event);
+void mouseReleaseEvent(QMouseEvent *event);
+
+------Gameboard-------
+The Gameboard class have the following member data: objectList,  score, lives, speed, index, time, gameTimer, assassinTimer, projectileTimer, pause, alive, newLevel, projectileFire, level, player, and menu.  objectList is essentially a linked list of every object in the game (player, monsters, objective, etc.). Score, lives, speed, time are all integers that help keep track of the state of the game. Pause and alive are booleans used to keep track of the state of the game. Delegate is a pointer to a menu that allows gameBoard to communicate to the menu whenever the stats are updated. TimerId holds the id of the current timer. Index is a temporary integer used by the class. Player is a pointer to the current player object in the game.
+
+Below are the functions and their description in the Gameboard class:
+
+//Constructor
+GameBoard(QWidget *parent = 0);
+// Sets the pointer to the menu object
+void setMenu(Menu *menu);
+// Returns the level
+LEVEL getLevel();
+// Instantiate all level one objects and store them into objectList
+void levelOneObjects();
+// Instantiate all level one objects and store them into objectList
+void levelTwoObjects();
+// Instantiate all level one objects and store them into objectList
+void levelThreeObjects();
+// Everytime repaint() is called, perform the appropriate action
+void paintEvent(QPaintEvent *event);
+// Every time the timer is reached, perform the appropriate action
+void timerEvent(QTimerEvent *event);
+// Depending on what key is pressed, set the appropriate values
+void keyPressEvent(QKeyEvent *event);
+// Depending if the game is paused or not, perform the appropriate action
+void pauseGame();
+// Sets alive to false, kill the timer, and repaint
+void endGame();
+// Set alive to true and reset lives, objects, and start timer
+void restartGame();
+// Creates player
+void createPlayer();
+// Creates assassin
+void createAssassin();
+// Creates the projectile based on weapon
+void createProjectile(WEAPON type);
+// Creates all monsters, depending on type
+void createMonster(MONSTER type);
+// Creates all missles
+void createMissile();
+// Creates tracking missile
+void createTMissile();
+// Creates gernade
+void createIcespike();
+// Creates all life items
+void createLife();  
+// Create all cactus
+void createCactus();
+// Create all rocks
+void createRock();
+// Creates all bombs
+void createBomb();    
+// Create a intel
+void createIntel(); 
+// Creates all snow
+void createSnowball();
+// Loop through and move every object
+void moveAll();
+// Depending on the collion, perform the appropriate result
+void playerCollision();
+// Removes object from objectList base on index
+void removeObj(int index);   
+// Depending on the collion, perform the appropriate result    
+void monsterCollision();
+// Update the score and the level if score is high enough
+void addScore();
+//Update the level
+void updateLevel();
+
+------Menu-------
+The Menu class have the following member data: score, lives, level. These integers are used to keep track of the stats of the game.
+
+Below are the functions and their description in the Menu class:
+// Constructor
+Menu(QWidget *parent = 0);
+// Update the stats of the menu
+void updateMenu(int score, int lives, int level);
+// Draws the menu
+void paintEvent(QPaintEvent *event);
+
+------Object-------
+The Object class have the following member data: image,rect, touchedOnce, and direction. Image the image that the object contains. Rect is the x,y coordinates of the image as well as its width and height. TouchedOnce is used when two objects intersect. When the object first intersected, the boolean is set to true, when the objects don't intersect, the boolean is set to false. Direction is an enumerated type which describes which direction the object is facing. Note: Object is an abstract base class which every object (moving and non-moving) inherits from.
+
+Below are the functions and their description in the Object class:
+// Constructor
+Object(QWidget *parent = 0):QWidget(parent){};
+// Getters
+QImage* getImage();
+QRect getRect();
+bool getTouchedOnce();
+// Setters
+void setPosition(int x, int y);
+void setTouchedOnce(bool value);
+// Moves the object
+virtual void moveObject() = 0;
+// Destructor
+~Object();
+
+------Projectile-------
+Aside from its inherited members, functions, and constructor, the Projectile class has no additional data or functions.
+
+------Bullet-------
+Aside from its inherited members and functions the Bullet class has no additional member data.
+
+Below are the functions and their description in the Bullet class:
+
+//Constructor
+Bullet(QWidget *parent = 0, Coordinate pos = defaultCoordinate, DIRECTION dir = RIGHT);
+// Move bullet
+virtual void moveObject();
+
+------Rocket-------
+Aside from its inherited members and functions the Rocket class has no additional member data.
+
+Below are the functions and their description in the Rocket class:
+
+//Constructor
+Rocket(QWidget *parent = 0, Coordinate pos = defaultCoordinate, DIRECTION dir = RIGHT);
+// Move Rocket
+virtual void moveObject();
+
+------Player-------
+The Player class have the following member data: weapon, hidden, and walking.
+
+Below are the functions and their description in the Player class:
+
+//Constructor
+Player(QWidget *parent = 0, Coordinate pos = defaultCoordinate);
+// Returns hidden status
+bool getHidden();
+// Returns direction
+DIRECTION getDirection();
+// Returns weapon
+WEAPON getWeapon();
+// Determine if player had collided with another object
+bool isCollided(int &index, Linkedlist<Object *> &objectList);
+// Does not move the object, but has to implement it because it inherits from Object class
+virtual void moveObject();  
+// Moves the player
+void keyMoveObject(int input);
+// Make sure the player stays in bounds
+void boundCheck();
+
+------Monster-------
+Aside from the inherited members from Object class, the Monster class have no member data.
+
+------Soldier-------
+Aside from the inherited members from Monster class, the Soldier class have no member data.
+
+Below are the functions and their description in the Soldier class:
+//Constructor
+Soldier(QWidget *parent = 0, Coordinate pos = defaultCoordinate);
+// Move Soldier
+virtual void moveObject();
+// Check to see if object is out of bounds
+void boundCheck();
+
+------Scorpion-------
+Aside from the inherited members from Monster class, the Scorpion class have no member data.
+
+Below are the functions and their description in the Player class:
+//Constructor
+Scropion(QWidget *parent = 0, Coordinate pos = defaultCoordinate);
+// Move Scropion
+virtual void moveObject();
+// Check to see if object is out of bounds
+void boundCheck();
+
+------Assassin-------
+Aside from the inherited members from Monster class, the Assassin class have no member data.
+
+Below are the functions and their description in the Assassin class:
+//Constructor
+Assassin(QWidget *parent = 0, Coordinate pos = defaultCoordinate);
+// Move Assassin
+virtual void moveObject();
+// Update image base on moving direction
+void updateImage();
+
+------Missile-------
+Aside from the inherited members from Object class, the Missile class have no member data.
+
+Below are the functions and their description in the Missile class:
+
+//Constructor
+Missile(QWidget *parent = 0, Coordinate pos = defaultCoordinate);
+// Move Missile
+virtual void moveObject(int input);
+// Check to see if missile is out of bounds
+void boundCheck();
+
+------TMissile-------
+The TMissile class have the following member data: finalPos.
+
+Below are the functions and their description in the TMissile class:
+
+//Constructor
+TMissile(QWidget *parent = 0, Coordinate finalPos = defaultCoordinate);
+// Move tracking missile
+virtual void moveObject();
+// Converts direction to coordinate
+Coordinate dirToCoor(DIRECTION &dir);
+// Check bounds
+bool boundCheck();
+
+------IceSpike-------
+The IceSpike class have the following member data: finalPos.
+
+Below are the functions and their description in the IceSpike class:
+
+//Constructor
+IceSpike(QWidget *parent = 0, Coordinate finalPos = defaultCoordinate);
+// Move tracking missile
+virtual void moveObject();
+// Check bounds
+bool boundCheck();
+
+------Life-------
+Aside from the inherited members from Object class, the Life class have no member data.
+
+Below are the functions and their description in the Life class:
+
+//Constructor
+Life(QWidget *parent = 0, Coordinate pos = defaultCoordinate);
+// Moves the life item to its current position (static)
+virtual void moveObject(int input);
+
+------Cactus-------
+Aside from the inherited members from Object class, the Cactus class have no member data.
+
+Below are the functions and their description in the Cactus class:
+
+//Constructor
+Cactus(QWidget *parent = 0, Coordinate pos = defaultCoordinate);
+// Moves the life item to its current position (static)
+virtual void moveObject(int input);
+
+------Bomb-------
+Aside from the inherited members from Object class, the Bomb class have no member data.
+
+Below are the functions and their description in the Bomb class:
+
+//Constructor
+Bomb(QWidget *parent = 0, Coordinate pos = defaultCoordinate);
+// Moves the bomb item to its current position (static)
+virtual void moveObject(int input);
+
+------Rock-------
+Aside from the inherited members from Object class, the Rock class have no member data.
+
+Below are the functions and their description in the Rock class:
+
+//Constructor
+Rock(QWidget *parent = 0, Coordinate pos = defaultCoordinate);
+// Moves the rock item to its current position (static)
+virtual void moveObject(int input);
+
+------Intel-------
+Aside from the inherited members from Object class, the Intel class have no member data.
+
+Below are the functions and their description in the Intel class:
+
+//Constructor
+Intel(QWidget *parent = 0, Coordinate pos = defaultCoordinate);
+// Moves the rock item to its current position
+virtual void moveObject(int input);
+
+------Snowball-------
+Aside from the inherited members from Object class, the Snowball class have no member data.
+
+Below are the functions and their description in the Snowball class:
+
+//Constructor
+Snowball(QWidget *parent = 0, Coordinate pos = defaultCoordinate);
+// Moves the rock item to its current position
+virtual void moveObject(int input);
+// Check to see if object is out of bounds
+void boundCheck();  
+
+
+Global Data/Functions
+------------------------------
+There are two C structs that can be used by all Classes. One is Coordinate which is essentially two points (x and y). The other is Size which essentially consists of width and height. There is an enum type DIRECTION with values of TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, TOP, RIGHT, LEFT, and BOTTOM. Another enum type is WEAPON with values of PISTOL, MACHINE_GUN, ROCKET_LAUNCHER. TRANSLATE_POINT is the common point all objects translate to (left, right, up down). DefaultCoordinate and DefaultSize is the default values (0) when objects are initialized. IMAGE_PATH is a constant pointing to the image directory.
+
+
+High-level Architecture
+------------------------------
+The Mainboard class represents the entire window that both holds the main menu, instruction, and gameboard class. The main menu simply displays a list of options for the user to choose from. The instruction displays information about the game. The Gameboard class is the backbone of the entire game. It starts of the application by instantiates all necessary objects for the game and store them in objectList, keeps track of the state of the game, paints the GUI interface, and starts the timer. The Object Class is an abstract base class for every object in the game. It contains basic information about an object such as image, position, and size. The Projectile class is an abstract class for all objects the User shoots. The Monster class is an abstract class for all enemies of that will hurt the player.
+
+Every time the timer reaches its time, all objects are repositioned. The Gameboard class determines if they are overlapped. If they do, then the appropriate result will be performed. For example, when a player object overlaps with a bomb object, the live counter would be decremented.  When a player touches the intel, the player will have 10 more points on his score and a new goal will be generated within the gameBounds.  
+
+The Gamebaord have a pointer to the menu. This allows for communication between the Gameboard object and the Menu object. Thus, whenever the player's stats is updated, the Menu will be updated as well.
+
+User Interface
+------------------------------
+When the program starts, the main menu is shown. Depending on what menu item the user click, the appropriate display will be shown. For example, if the user clicks instruction, the instruction display will be show. If the user clicks start game, the gameboard will be shown.
+
+The game is display on the left while the game information and player stats are displayed on the right. The user can move the player object using certain keys from the keyboard (aswd). Every time the user touches the intel, a new intel will be generated. The user can also switch weapons with the left and right arrow. The user can press 'H' to hide (which makes them immune to damange), 'P' to pause, or 'Q' to quit, which returns the user back to main menu.
+
+
+Test Cases
+------------------------------
+
+Test Case #1: Entering keys which are not part of the command
+Possible Result: Program may crash or something unexpected happens
+Actual Result: Nothing happen
+
+Test Case #2: Moving the player object off screen
+Possible Result: Program moves off screen
+Actual Result: Player stays within the bounds of the game
+
+Test Case #3: Resizing terminal window to see if the game still works
+Possible Result: Characters and objects are not properly aligned
+Actual Result: Window is fixed in size, cannot change it 
+
+Test Case #4: Decrementing life to -1 to see how the game will react
+Possible Result: If only 0 displays a gameover, it is possible to still be playing the game with negative lives
+Actual Result: Game over menu displays
+
+Test Case #5: Pausing the game and moving the characters
+Possible Result: If pause isn't implemented properly, then it is possible to still move characters on screen
+Actual Result: Pause menu displays and everything in the game stops. Only valid user input is 'C', which will continue the game.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
