@@ -1,1 +1,1 @@
-This is a test ![alt tag](https://github.com/bennettl/Metal-Gear/blob/master/images/level1/bomb.png)
+This is a test ![alt tag](images/level1/bomb.png)
